@@ -16,6 +16,7 @@ UP = 3
 
 MAPS = {
     "2x2": ["SF", "HG"],
+    "4x4-easy":["SFFF", "FHFF", "FFFF", "HFFG"],
     "4x4": ["SFFF", "FHFH", "FFFH", "HFFG"],
     "8x8": [
         "SFFFFFFF",
@@ -54,7 +55,7 @@ class DiscreteEnv(Env):
     (**) list or array of length nS
     """
 
-    def __init__(self, nS, nA, P, isd, max_length=100):
+    def __init__(self, nS, nA, P, isd, max_length=100, termination_penalty=-50):
         self.P = P
         self.isd = isd
         self.lastaction = None  # for rendering
@@ -67,6 +68,7 @@ class DiscreteEnv(Env):
         self.seed()
         self.s = categorical_sample(self.isd, self.np_random)
         self.max_length = max_length
+        self.termination_penalty = termination_penalty
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -86,7 +88,7 @@ class DiscreteEnv(Env):
         self.lastaction = a
         if self.t >= self.max_length:
             d = True
-            r = -200
+            r = self.termination_penalty
         self.t += 1
         return (int(s), r, d, {"prob": p})
 
@@ -187,10 +189,11 @@ class FrozenLakeEnv(DiscreteEnv):
             newstate = to_s(newrow, newcol)
             newletter = desc[newrow, newcol]
             done = bytes(newletter) in b"GH"
-            reward = float(newletter == b"G")
+            # reward = float(newletter == b"G")
             reward = -1
-            if newletter == b"H":
-                reward = -100
+            # if newletter == b"H":
+            #     reward = -100
+            done = False
             return newstate, reward, done
 
         for row in range(nrow):
