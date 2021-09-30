@@ -11,7 +11,7 @@ Suppose you instantiate the environment like so: `env = FrozenLakeEnv(map\_name=
 ### Basic information on environnment
 To get the number of possible actions (in discrete environments): `env.action_space.n`
 
-To get the number of state (in discrete environments): `env.observation_space.n`
+To get the number of states (in discrete environments): `env.observation_space.n`
 
 ### Navigating an episode
 Before you start an episode, you must reset the environment using the reset function. This function also returns the inital state of the environment.
